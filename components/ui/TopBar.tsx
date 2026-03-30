@@ -4,23 +4,24 @@ import { useState, useRef, useEffect } from 'react'
 import { GeocodingResult } from '@/lib/types'
 import { GeocodingAdapter } from '@/lib/adapters/geocoding'
 
-const POPULAR_PLACES = [
-  { icon: '🗽', label: 'Times Square',           latlng: { lat: 40.7580, lng: -73.9855 } },
-  { icon: '🌳', label: 'Central Park',            latlng: { lat: 40.7851, lng: -73.9683 } },
-  { icon: '🏛️', label: 'Grand Central Terminal',  latlng: { lat: 40.7527, lng: -73.9772 } },
-  { icon: '🌉', label: 'Brooklyn Bridge',          latlng: { lat: 40.7061, lng: -73.9969 } },
-  { icon: '🗼', label: 'Empire State Building',    latlng: { lat: 40.7484, lng: -73.9857 } },
-  { icon: '🎨', label: 'MoMA',                    latlng: { lat: 40.7614, lng: -73.9776 } },
-  { icon: '🛳️', label: 'Battery Park',            latlng: { lat: 40.7033, lng: -74.0170 } },
-  { icon: '🎭', label: 'Broadway',                 latlng: { lat: 40.7590, lng: -73.9845 } },
+const POPULAR_PLACES: GeocodingResult[] = [
+  { label: 'Times Square, West 42nd St, Midtown Manhattan, NY',          latlng: { lat: 40.7580, lng: -73.9855 } },
+  { label: 'Central Park, 59th St to 110th St, Manhattan, NY',           latlng: { lat: 40.7851, lng: -73.9683 } },
+  { label: 'Grand Central Terminal, 89 E 42nd St, Midtown Manhattan, NY',latlng: { lat: 40.7527, lng: -73.9772 } },
+  { label: 'Empire State Building, 350 5th Ave, Midtown Manhattan, NY',  latlng: { lat: 40.7484, lng: -73.9857 } },
+  { label: 'Brooklyn Bridge, Tillary St & Adams St, Brooklyn, NY',       latlng: { lat: 40.7061, lng: -73.9969 } },
+  { label: 'Broadway, Theater District, Midtown Manhattan, NY',          latlng: { lat: 40.7590, lng: -73.9845 } },
+  { label: 'Battery Park, State St & Battery Pl, Lower Manhattan, NY',   latlng: { lat: 40.7033, lng: -74.0170 } },
+  { label: 'MoMA, 11 W 53rd St, Midtown Manhattan, NY',                  latlng: { lat: 40.7614, lng: -73.9776 } },
 ]
 
 interface Props {
   onLocationSelect: (result: GeocodingResult) => void
-  onGetDirections: (result: GeocodingResult) => void
+  onGetDirections:  (result: GeocodingResult) => void
+  onClear?:         () => void   // called when search is cleared (X button or empty input)
 }
 
-export default function TopBar({ onLocationSelect, onGetDirections }: Props) {
+export default function TopBar({ onLocationSelect, onGetDirections, onClear }: Props) {
   const [query, setQuery]           = useState('')
   const [results, setResults]       = useState<GeocodingResult[]>([])
   const [loading, setLoading]       = useState(false)
@@ -78,7 +79,7 @@ export default function TopBar({ onLocationSelect, onGetDirections }: Props) {
               ref={inputRef}
               type="text"
               value={query}
-              onChange={e => setQuery(e.target.value)}
+              onChange={e => { setQuery(e.target.value); if (e.target.value === '') onClear?.() }}
               onFocus={() => setFocused(true)}
               onBlur={() => setTimeout(() => setFocused(false), 200)}
               placeholder="Search places in New York…"
@@ -90,7 +91,7 @@ export default function TopBar({ onLocationSelect, onGetDirections }: Props) {
             {query && !loading && (
               <button
                 onMouseDown={e => e.preventDefault()}
-                onClick={() => { setQuery(''); setResults([]); inputRef.current?.focus() }}
+                onClick={() => { setQuery(''); setResults([]); inputRef.current?.focus(); onClear?.() }}
                 className="text-slate-400 hover:text-slate-600 transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,23 +108,27 @@ export default function TopBar({ onLocationSelect, onGetDirections }: Props) {
                 Popular in NYC
               </p>
               <div className="pb-1">
-                {POPULAR_PLACES.map((p, i) => {
-                  const result: GeocodingResult = { label: `${p.label}, New York, NY`, latlng: p.latlng }
-                  return (
-                    <div key={i} className="flex items-center gap-0 border-b border-slate-50 last:border-0">
+                {POPULAR_PLACES.map((place, i) => (
+                    <div key={i} className="flex items-center border-b border-slate-50 last:border-0">
                       {/* Primary: fly to */}
                       <button
                         onMouseDown={e => e.preventDefault()}
-                        onClick={() => selectPlace(result)}
-                        className="flex-1 flex items-center gap-2.5 px-3.5 py-2.5 hover:bg-slate-50 transition-colors text-left"
+                        onClick={() => selectPlace(place)}
+                        className="flex-1 flex items-start gap-2.5 px-3.5 py-2.5 hover:bg-slate-50 transition-colors text-left"
                       >
-                        <span className="text-base w-6 text-center flex-shrink-0">{p.icon}</span>
-                        <span className="text-sm font-medium text-slate-700">{p.label}</span>
+                        <svg className="w-3.5 h-3.5 text-slate-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-slate-700 truncate">{place.label.split(',')[0]}</p>
+                          <p className="text-xs text-slate-400 truncate">{place.label.split(',').slice(1, 3).join(',')}</p>
+                        </div>
                       </button>
                       {/* Secondary: get directions */}
                       <button
                         onMouseDown={e => e.preventDefault()}
-                        onClick={() => getDirections(result)}
+                        onClick={() => getDirections(place)}
                         className="flex-shrink-0 flex items-center gap-1 pr-3.5 py-2.5 text-green-600 hover:text-green-700 transition-colors"
                         title="Get directions"
                       >
@@ -134,8 +139,7 @@ export default function TopBar({ onLocationSelect, onGetDirections }: Props) {
                         <span className="text-xs font-semibold">Directions</span>
                       </button>
                     </div>
-                  )
-                })}
+                  ))}
               </div>
             </div>
           )}

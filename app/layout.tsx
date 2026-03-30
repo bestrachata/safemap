@@ -1,13 +1,31 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
+export const viewport: Viewport = {
+  themeColor: '#16a34a',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',   // exposes safe-area-inset-* CSS env vars on iOS
+}
+
 export const metadata: Metadata = {
   title: 'SafeMap — Navigate with Confidence',
-  description: 'A safety-first navigation platform. Explore safety heatmaps, find the safest route, and plan trips with confidence.',
-  icons: { icon: '/favicon.ico' },
+  description: 'A safety-first navigation platform. Explore safety heatmaps, find the safest route, and travel with confidence.',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'SafeMap',
+  },
+  icons: {
+    icon: '/icon-512.png',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     title: 'SafeMap',
     description: 'Navigate with confidence using real-time safety heatmaps.',

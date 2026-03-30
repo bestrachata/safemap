@@ -10,8 +10,11 @@ export const NominatimAdapter: IGeocodingAdapter = {
     const params = new URLSearchParams({
       q: query,
       format: 'json',
-      limit: '5',
+      limit: '6',
       countrycodes: 'us',
+      // Bias results strongly toward Greater NYC
+      viewbox: '-74.3,40.45,-73.65,40.95',
+      bounded: '1',
     })
     const res = await fetch(`${NOMINATIM_BASE}/search?${params}`, {
       headers: { 'User-Agent': 'SafeMap/1.0 (safety-navigation-app)' },

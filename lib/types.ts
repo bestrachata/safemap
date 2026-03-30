@@ -77,6 +77,29 @@ export interface NavigationState {
   currentStepIndex: number
 }
 
+// Crime/data layer filters
+export interface CrimeLayerFilter {
+  yearMin:           number   // inclusive lower bound, e.g. 2015
+  yearMax:           number   // inclusive upper bound, e.g. 2026
+  showShootings:     boolean
+  showHateCrimes:    boolean
+  showCfsSevere:     boolean  // CFS severity 3
+  showCfsDisorder:   boolean  // CFS severity 2
+  showCfsQol:        boolean  // CFS severity 1
+  showSyringes:      boolean
+}
+
+export const DEFAULT_CRIME_FILTER: CrimeLayerFilter = {
+  yearMin:         2018,
+  yearMax:         2026,
+  showShootings:   true,
+  showHateCrimes:  true,
+  showCfsSevere:   true,
+  showCfsDisorder: false,
+  showCfsQol:      false,
+  showSyringes:    true,
+}
+
 // Trip planner
 export interface TripPreferences {
   origin: GeocodingResult | null

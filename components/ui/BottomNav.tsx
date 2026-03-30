@@ -49,7 +49,10 @@ interface Props {
 
 export default function BottomNav({ activeTab, onChange }: Props) {
   return (
-    <div className="fixed bottom-0 inset-x-0 z-[1002] bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]">
+    <div
+      className="fixed bottom-0 inset-x-0 z-[1002] bg-white border-t border-slate-100 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+    >
       <div className="flex items-stretch h-16 max-w-lg mx-auto">
         {TABS.map(tab => {
           const active = activeTab === tab.id

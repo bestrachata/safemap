@@ -5,7 +5,9 @@ import { HeatmapLayer } from '@/lib/types'
 
 interface Props {
   activeLayer: HeatmapLayer
-  onChange: (layer: HeatmapLayer) => void
+  onChange:    (layer: HeatmapLayer) => void
+  /** When false the dropdown opens downward (use when control is near the top of screen) */
+  dropUp?:     boolean
 }
 
 const LAYERS: { id: HeatmapLayer; label: string; icon: string; desc: string }[] = [
@@ -16,7 +18,7 @@ const LAYERS: { id: HeatmapLayer; label: string; icon: string; desc: string }[] 
   { id: 'crowdDensity', label: 'Crowd Density', icon: '👥', desc: 'People around you' },
 ]
 
-export default function LayerSelector({ activeLayer, onChange }: Props) {
+export default function LayerSelector({ activeLayer, onChange, dropUp = true }: Props) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -48,9 +50,10 @@ export default function LayerSelector({ activeLayer, onChange }: Props) {
         </svg>
       </button>
 
-      {/* Dropdown */}
+      {/* Dropdown — opens upward by default, downward when dropUp=false */}
       {open && (
-        <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-10">
+        <div className={`absolute w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-10
+          ${dropUp ? 'bottom-full mb-2 left-1/2 -translate-x-1/2' : 'top-full mt-2 right-0'}`}>
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide px-4 pt-3 pb-2">
             View heatmap by
           </p>

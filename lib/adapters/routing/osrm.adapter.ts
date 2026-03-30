@@ -2,9 +2,12 @@ import { IRoutingAdapter } from './interface'
 import { LatLng, RouteResult, RouteStep } from '../../types'
 import { SafetyDataAdapter } from '../safety-data'
 import { routeSafetyScore } from '../../safetyScore'
+import { MockRoutingAdapter } from './mock.adapter'
 
-// OSRM public demo server — free, no API key required
+// OSRM public demo server — free, no API key required.
+// Falls back to MockRoutingAdapter if the server is unreachable.
 const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving'
+const OSRM_TIMEOUT_MS = 7000
 
 function decodePolyline(encoded: string): LatLng[] {
   const points: LatLng[] = []
@@ -55,17 +58,24 @@ export const OsrmAdapter: IRoutingAdapter = {
     const coords = `${origin.lng},${origin.lat};${destination.lng},${destination.lat}`
     const url = `${OSRM_BASE}/${coords}?overview=full&geometries=polyline&steps=true&alternatives=true`
 
-    const response = await fetch(url)
-    if (!response.ok) throw new Error('Routing request failed')
-    const data = await response.json()
+    // Abort the request if OSRM doesn't respond within the timeout
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), OSRM_TIMEOUT_MS)
+
+    let data: { routes: { geometry: string; legs: unknown[]; distance: number; duration: number }[] }
+    try {
+      const response = await fetch(url, { signal: controller.signal })
+      clearTimeout(timer)
+      if (!response.ok) throw new Error(`OSRM responded ${response.status}`)
+      data = await response.json()
+    } catch (err) {
+      clearTimeout(timer)
+      console.warn('[SafeMap] OSRM unavailable, using mock routing —', (err as Error).message)
+      return MockRoutingAdapter.getRoutes(origin, destination)
+    }
 
     const cells = await SafetyDataAdapter.getGridCells()
-    const routes: RouteResult[] = data.routes.map((r: {
-      geometry: string
-      legs: unknown[]
-      distance: number
-      duration: number
-    }, i: number) => {
+    const routes: RouteResult[] = data.routes.map((r, i: number) => {
       const geometry = decodePolyline(r.geometry)
       const safetyScore = routeSafetyScore(geometry, cells)
       return {
