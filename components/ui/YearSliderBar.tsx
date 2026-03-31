@@ -9,7 +9,8 @@ interface Props {
   activeLayer: HeatmapLayer
   filter: CrimeLayerFilter
   onChange: (f: CrimeLayerFilter) => void
-  topOffset?: number   // px from top — caller adjusts for TopBar vs nav header height
+  /** px value or CSS string (e.g. "calc(env(safe-area-inset-top,0px) + 120px)") */
+  topOffset?: number | string
 }
 
 export default function YearSliderBar({ activeLayer, filter, onChange, topOffset = 72 }: Props) {

@@ -57,7 +57,7 @@ export default function FilterDropdown({ activeLayer, filter, onChange, dropUp =
       <button
         onClick={() => setOpen(v => !v)}
         className={`
-          flex items-center gap-2 px-3.5 py-2.5 rounded-2xl shadow-lg transition-shadow
+          flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2.5 rounded-2xl shadow-lg transition-shadow
           ${open ? 'bg-green-600 text-white shadow-xl' : 'bg-white text-slate-700 hover:shadow-xl'}
         `}
       >
@@ -66,7 +66,8 @@ export default function FilterDropdown({ activeLayer, filter, onChange, dropUp =
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2}
             d="M3 4h18M6 8h12M9 12h6M11 16h2" />
         </svg>
-        <span className="text-sm font-semibold">Filter</span>
+        {/* Text hidden on narrow screens */}
+        <span className="hidden sm:inline text-sm font-semibold">Filter</span>
         {/* Active count badge */}
         {activeCount > 0 && (
           <span className={`
@@ -86,7 +87,7 @@ export default function FilterDropdown({ activeLayer, filter, onChange, dropUp =
 
       {/* Dropdown — opens upward by default, downward when dropUp=false */}
       {open && (
-        <div className={`absolute w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-10
+        <div className={`absolute w-52 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-[1100]
           ${dropUp ? 'bottom-full mb-2 right-0' : 'top-full mt-2 right-0'}`}>
           <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide px-4 pt-3 pb-2">
             Show on map

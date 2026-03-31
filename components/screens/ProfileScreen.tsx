@@ -1,6 +1,7 @@
 'use client'
 
 import { scoreToColor } from '@/lib/safetyScore'
+import { SELF_USER } from '@/lib/friendData'
 
 const SAVED_PLACES = [
   { name: 'Home', address: '230 W 73rd St, Upper West Side', icon: '🏠' },
@@ -14,30 +15,54 @@ const RECENT_ROUTES = [
   { from: 'Financial Dist.', to: 'Brooklyn Bridge', score: 77, date: 'Mon' },
 ]
 
-export default function ProfileScreen() {
+interface Props {
+  onClose?: () => void
+}
+
+export default function ProfileScreen({ onClose }: Props) {
   return (
     <div className="flex flex-col h-full bg-white">
-      {/* Header — matches AreaDetailPanel style */}
-      <div className="px-5 pt-5 pb-4 border-b border-slate-100 flex-shrink-0">
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">SafeMap</p>
-        <h2 className="text-lg font-bold text-slate-800 mt-0.5">Profile</h2>
+      {/* Header */}
+      <div
+        className="px-5 pb-4 border-b border-slate-100 flex-shrink-0 flex items-center justify-between"
+        style={{ paddingTop: 'max(env(safe-area-inset-top, 0px), 20px)' }}
+      >
+        <div>
+          <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">SafeMap</p>
+          <h2 className="text-lg font-bold text-slate-800 mt-0.5">Profile</h2>
+        </div>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors"
+            aria-label="Close profile"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {/* User card */}
         <div className="m-5 bg-slate-50 rounded-2xl p-4 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-slate-200 flex items-center justify-center flex-shrink-0">
-            <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+          <div className="relative flex-shrink-0">
+            <img
+              src={SELF_USER.avatarUrl}
+              alt={SELF_USER.name}
+              className="w-14 h-14 rounded-2xl object-cover"
+            />
+            <span className="absolute bottom-0.5 right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-50" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-slate-800">Guest User</p>
+            <p className="text-sm font-bold text-slate-800">{SELF_USER.name}</p>
             <p className="text-xs text-slate-400 mt-0.5">New York, NY</p>
+            <div className="flex items-center gap-1 mt-1">
+              <span className="w-1.5 h-1.5 bg-green-500 rounded-full" />
+              <span className="text-[10px] font-medium text-green-600">Online · Location sharing on</span>
+            </div>
           </div>
-          <button className="text-xs font-semibold text-green-600 border border-green-200 px-3 py-1.5 rounded-xl hover:bg-green-50 transition-colors flex-shrink-0">
-            Sign in
-          </button>
         </div>
 
         {/* Stats */}

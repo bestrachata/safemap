@@ -11,6 +11,9 @@ export interface Bounds {
   west: number
 }
 
+// Map display styles
+export type MapStyle = 'light' | 'color' | 'dark' | 'satellite'
+
 // Safety scoring
 export type HeatmapLayer = 'composite' | 'crime' | 'lighting' | 'visualAppeal' | 'crowdDensity'
 

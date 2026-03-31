@@ -5,6 +5,12 @@ import { GeocodingResult, NavigationState, RouteResult } from '@/lib/types'
 import { RoutingAdapter } from '@/lib/adapters/routing'
 import { GeocodingAdapter } from '@/lib/adapters/geocoding'
 import { scoreToColor, scoreLabel, DEFAULT_WEIGHTS } from '@/lib/safetyScore'
+import { SELF_USER } from '@/lib/friendData'
+
+const MY_LOCATION: GeocodingResult = {
+  label: 'My Location, Midtown Manhattan, NY',
+  latlng: { lat: SELF_USER.lat, lng: SELF_USER.lng },
+}
 
 // ── Route criteria ────────────────────────────────────────────────────────────
 interface RouteCriteria {
@@ -84,11 +90,12 @@ function useGeoSearch() {
   return { query, setQuery, results, clearResults: () => setResults([]), focused, setFocused }
 }
 
-function LocationInput({ placeholder, color, value, onChange, results, onSelect, onClear, focused, onFocus, onBlur }: {
+function LocationInput({ placeholder, color, value, onChange, results, onSelect, onClear, focused, onFocus, onBlur, showMyLocation }: {
   placeholder: string; color: string; value: string
   onChange: (v: string) => void; results: GeocodingResult[]
   onSelect: (r: GeocodingResult) => void; onClear: () => void
   focused: boolean; onFocus: () => void; onBlur: () => void
+  showMyLocation?: boolean
 }) {
   const showPopular = focused && value.length < 3 && results.length === 0
   const showResults = focused && results.length > 0
@@ -113,9 +120,30 @@ function LocationInput({ placeholder, color, value, onChange, results, onSelect,
         )}
       </div>
 
-      {/* Popular NYC places — shown immediately on focus before user types */}
+      {/* Suggestions dropdown */}
       {showPopular && (
         <div className="absolute bottom-full mb-1 w-full bg-white rounded-xl shadow-xl border border-slate-100 z-50 overflow-hidden">
+
+          {/* ── My Location — pinned at top for origin input only ── */}
+          {showMyLocation && (
+            <button
+              onMouseDown={e => e.preventDefault()}
+              onClick={() => onSelect(MY_LOCATION)}
+              className="w-full text-left px-3 py-2.5 hover:bg-green-50 border-b border-green-100 flex items-center gap-2 transition-colors"
+            >
+              <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-green-700">My current location</p>
+                <p className="text-xs text-slate-400">Midtown Manhattan, NY</p>
+              </div>
+              <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full flex-shrink-0">GPS</span>
+            </button>
+          )}
+
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide px-3 pt-2.5 pb-1">
             Popular in NYC
           </p>
@@ -360,6 +388,7 @@ export default function NavigationPanel({ open, navState, onNavStateChange, onCl
             focused={origin.focused}
             onFocus={() => origin.setFocused(true)}
             onBlur={() => setTimeout(() => origin.setFocused(false), 150)}
+            showMyLocation
           />
 
           {/* Swap button */}

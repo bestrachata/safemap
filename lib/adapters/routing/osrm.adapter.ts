@@ -4,16 +4,28 @@ import { SafetyDataAdapter } from '../safety-data'
 import { routeSafetyScore } from '../../safetyScore'
 import { MockRoutingAdapter } from './mock.adapter'
 
-// OSRM public demo server — free, no API key required.
-// Falls back to MockRoutingAdapter if the server is unreachable.
-const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving'
-const OSRM_TIMEOUT_MS = 7000
+/**
+ * Real-street routing via OSRM walking profile.
+ *
+ * Tries two free public endpoints in order — the second is the official
+ * OpenStreetMap.de walking server which is more stable than the demo instance.
+ * Falls back to the mock L-shape adapter only when both are unreachable.
+ */
 
+const TIMEOUT_MS = 12_000
+
+// Tried in order; first successful response wins.
+const ENDPOINTS = [
+  // OSM-maintained walking server (most reliable, foot profile)
+  'https://routing.openstreetmap.de/routed-foot/route/v1/foot',
+  // OSRM demo server, walking profile
+  'https://router.project-osrm.org/route/v1/walking',
+]
+
+// ── Polyline decoder (Google encoded polyline format) ────────────────────
 function decodePolyline(encoded: string): LatLng[] {
   const points: LatLng[] = []
-  let index = 0
-  let lat = 0
-  let lng = 0
+  let index = 0, lat = 0, lng = 0
   while (index < encoded.length) {
     let shift = 0, result = 0, byte: number
     do { byte = encoded.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5 } while (byte >= 0x20)
@@ -26,6 +38,7 @@ function decodePolyline(encoded: string): LatLng[] {
   return points
 }
 
+// ── Turn-by-turn step parser ──────────────────────────────────────────────
 function parseSteps(legs: unknown[]): RouteStep[] {
   const steps: RouteStep[] = []
   ;(legs as Array<{ steps: unknown[] }>).forEach(leg => {
@@ -35,13 +48,18 @@ function parseSteps(legs: unknown[]): RouteStep[] {
       distance: number
       duration: number
     }>).forEach(step => {
-      const type = step.maneuver.type
+      const type     = step.maneuver.type
       const modifier = step.maneuver.modifier ?? ''
-      let instruction = `Continue on ${step.name || 'the road'}`
-      if (type === 'turn') instruction = `Turn ${modifier} onto ${step.name || 'the road'}`
-      else if (type === 'depart') instruction = `Head ${modifier} on ${step.name || 'the road'}`
+      const road     = step.name || 'the road'
+
+      let instruction = `Continue on ${road}`
+      if (type === 'turn')        instruction = `Turn ${modifier} onto ${road}`
+      else if (type === 'depart') instruction = `Head ${modifier} on ${road}`
       else if (type === 'arrive') instruction = 'Arrive at your destination'
-      else if (type === 'roundabout') instruction = `Take the roundabout onto ${step.name || 'the road'}`
+      else if (type === 'end of road') instruction = `At the end of the road, turn ${modifier} onto ${road}`
+      else if (type === 'new name')    instruction = `Continue onto ${road}`
+      else if (type === 'roundabout')  instruction = `Take the roundabout onto ${road}`
+
       steps.push({
         instruction,
         distance: step.distance,
@@ -53,46 +71,68 @@ function parseSteps(legs: unknown[]): RouteStep[] {
   return steps
 }
 
+// ── Fetch helper with per-request timeout ────────────────────────────────
+async function fetchWithTimeout(url: string): Promise<Response> {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS)
+  try {
+    const res = await fetch(url, { signal: controller.signal })
+    clearTimeout(timer)
+    return res
+  } catch (err) {
+    clearTimeout(timer)
+    throw err
+  }
+}
+
+// ── Public adapter ────────────────────────────────────────────────────────
 export const OsrmAdapter: IRoutingAdapter = {
   async getRoutes(origin: LatLng, destination: LatLng): Promise<RouteResult[]> {
     const coords = `${origin.lng},${origin.lat};${destination.lng},${destination.lat}`
-    const url = `${OSRM_BASE}/${coords}?overview=full&geometries=polyline&steps=true&alternatives=true`
+    const query  = '?overview=full&geometries=polyline&steps=true&alternatives=true'
 
-    // Abort the request if OSRM doesn't respond within the timeout
-    const controller = new AbortController()
-    const timer = setTimeout(() => controller.abort(), OSRM_TIMEOUT_MS)
+    // Try each endpoint in order
+    for (const base of ENDPOINTS) {
+      try {
+        const res = await fetchWithTimeout(`${base}/${coords}${query}`)
+        if (!res.ok) throw new Error(`HTTP ${res.status}`)
 
-    let data: { routes: { geometry: string; legs: unknown[]; distance: number; duration: number }[] }
-    try {
-      const response = await fetch(url, { signal: controller.signal })
-      clearTimeout(timer)
-      if (!response.ok) throw new Error(`OSRM responded ${response.status}`)
-      data = await response.json()
-    } catch (err) {
-      clearTimeout(timer)
-      console.warn('[SafeMap] OSRM unavailable, using mock routing —', (err as Error).message)
-      return MockRoutingAdapter.getRoutes(origin, destination)
+        const data: {
+          routes: { geometry: string; legs: unknown[]; distance: number; duration: number }[]
+        } = await res.json()
+
+        if (!data.routes?.length) throw new Error('empty response')
+
+        const cells = await SafetyDataAdapter.getGridCells()
+
+        const routes: RouteResult[] = data.routes.map((r, i) => {
+          const geometry    = decodePolyline(r.geometry)
+          const safetyScore = routeSafetyScore(geometry, cells)
+          return {
+            geometry,
+            steps:         parseSteps(r.legs),
+            totalDistance: r.distance,
+            totalDuration: r.duration,
+            safetyScore,
+            label: i === 0 ? 'fastest' : 'fastest',
+          } satisfies RouteResult
+        })
+
+        // Rank by safety: highest score = safest route shown first
+        routes.sort((a, b) => b.safetyScore - a.safetyScore)
+        if (routes[0]) routes[0].label = 'safest'
+        if (routes[1]) routes[1].label = 'fastest'
+
+        console.info(`[SafeMap] Routing via ${base.includes('openstreetmap.de') ? 'OSM.de walking' : 'OSRM walking'}`)
+        return routes
+      } catch (err) {
+        console.warn(`[SafeMap] Routing endpoint ${base} failed —`, (err as Error).message)
+        // Try next endpoint
+      }
     }
 
-    const cells = await SafetyDataAdapter.getGridCells()
-    const routes: RouteResult[] = data.routes.map((r, i: number) => {
-      const geometry = decodePolyline(r.geometry)
-      const safetyScore = routeSafetyScore(geometry, cells)
-      return {
-        geometry,
-        steps: parseSteps(r.legs),
-        totalDistance: r.distance,
-        totalDuration: r.duration,
-        safetyScore,
-        label: i === 0 ? 'fastest' : 'safest',
-      } satisfies RouteResult
-    })
-
-    // Sort: highest safety score = safest route
-    routes.sort((a, b) => b.safetyScore - a.safetyScore)
-    if (routes.length > 0) routes[0].label = 'safest'
-    if (routes.length > 1) routes[1].label = 'fastest'
-
-    return routes
+    // All real endpoints failed — fall back to mock
+    console.warn('[SafeMap] All routing endpoints unreachable, using mock L-shape fallback')
+    return MockRoutingAdapter.getRoutes(origin, destination)
   },
 }

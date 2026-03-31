@@ -1,5 +1,9 @@
 'use client'
 
+import React from 'react'
+
+// Profile tab is still in the type union so page.tsx can activate it from
+// the top bar, but it no longer appears as a bottom nav button.
 export type Tab = 'map' | 'community' | 'profile' | 'settings'
 
 const TABS: { id: Tab; label: string; icon: (active: boolean) => React.ReactNode }[] = [
@@ -22,15 +26,6 @@ const TABS: { id: Tab; label: string; icon: (active: boolean) => React.ReactNode
     ),
   },
   {
-    id: 'profile',
-    label: 'Profile',
-    icon: (active) => (
-      <svg className="w-5 h-5" fill={active ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor" strokeWidth={active ? 0 : 1.8}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-      </svg>
-    ),
-  },
-  {
     id: 'settings',
     label: 'Settings',
     icon: (active) => (
@@ -44,7 +39,7 @@ const TABS: { id: Tab; label: string; icon: (active: boolean) => React.ReactNode
 
 interface Props {
   activeTab: Tab
-  onChange: (tab: Tab) => void
+  onChange:  (tab: Tab) => void
 }
 
 export default function BottomNav({ activeTab, onChange }: Props) {
@@ -60,7 +55,7 @@ export default function BottomNav({ activeTab, onChange }: Props) {
             <button
               key={tab.id}
               onClick={() => onChange(tab.id)}
-              className={`flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors
+              className={`relative flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors
                 ${active ? 'text-green-600' : 'text-slate-400 hover:text-slate-600'}`}
             >
               {tab.icon(active)}
