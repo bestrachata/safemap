@@ -47,7 +47,9 @@ const PILLS_H     = 44   // px — layer pills row height
 // Use CSS calc() so the header never blocks the pills on notched phones.
 // Single-row TopBar: env(safe-area-inset-top) + mt-3(12) + h-12(48) + 8px gap = +68px
 const PILLS_TOP   = 'calc(env(safe-area-inset-top, 0px) + 68px)'
-const SLIDER_TOP  = 'calc(env(safe-area-inset-top, 0px) + 116px)' // 68 + 44 + 4
+// SLIDER_TOP clears up to 2 pill rows (narrow screens stack pills + dropdowns):
+// 68 (header) + 44 (pills) + 44 (dropdown row) + 8 (gap) = 164px
+const SLIDER_TOP  = 'calc(env(safe-area-inset-top, 0px) + 164px)'
 
 export default function HomePage() {
   const [activeTab, setActiveTab]       = useState<Tab>('map')
@@ -198,30 +200,33 @@ export default function HomePage() {
           )}
 
           {/* ── Layer pills row + dropdowns ───────────────────────────────────
-              The pills scroll inside their own inner wrapper so that
-              FilterDropdown and MapStylePicker sit outside the overflow
-              clip — their absolute-positioned dropdowns render freely.    */}
+              Below 380 px the bar stacks vertically: pills on row 1 (full
+              width, scrollable) and the two icon buttons on row 2.
+              Above 380 px everything stays on one horizontal row.          */}
           <div
-            className="absolute z-[1000] flex items-center gap-1.5 left-3 right-3 transition-all duration-200"
+            className="absolute z-[1000] left-3 right-3 flex flex-col min-[380px]:flex-row min-[380px]:items-center gap-1.5 transition-all duration-200"
             style={{ top: isNavigating ? 'calc(env(safe-area-inset-top, 0px) + 95px)' : PILLS_TOP }}
           >
-            {/* Pills — scrollable, shrinks to give room to the action buttons */}
-            <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar">
+            {/* Pills — full-width on narrow, flex-1 on wide */}
+            <div className="w-full min-[380px]:flex-1 min-[380px]:min-w-0 overflow-x-auto no-scrollbar">
               <LayerSelector activeLayer={activeLayer} onChange={setActiveLayer} />
             </div>
 
-            {/* Dropdowns — outside the overflow container so menus aren't clipped */}
-            <FilterDropdown
-              activeLayer={activeLayer}
-              filter={crimeFilter}
-              onChange={setCrimeFilter}
-              dropUp={false}
-            />
-            <MapStylePicker
-              value={mapStyle}
-              onChange={setMapStyle}
-              dropUp={false}
-            />
+            {/* Dropdowns — row 2 on narrow (self-end keeps them right-aligned),
+                inline sibling on wide                                       */}
+            <div className="flex items-center gap-1.5 flex-shrink-0 self-end min-[380px]:self-auto">
+              <FilterDropdown
+                activeLayer={activeLayer}
+                filter={crimeFilter}
+                onChange={setCrimeFilter}
+                dropUp={false}
+              />
+              <MapStylePicker
+                value={mapStyle}
+                onChange={setMapStyle}
+                dropUp={false}
+              />
+            </div>
           </div>
 
           {/* Year range slider — shown below pills when crime/visual layer active */}
@@ -237,7 +242,7 @@ export default function HomePage() {
           {!navSheetOpen && !isNavigating && (
             <div
               className="absolute left-3 z-[1000] flex flex-col items-start gap-1.5"
-              style={{ bottom: NAV_BAR_H + 12 }}
+              style={{ bottom: `calc(${NAV_BAR_H}px + env(safe-area-inset-bottom, 0px) + 12px)` }}
             >
               <SafetyLegend />
               {cells.length > 0 && (
@@ -253,7 +258,9 @@ export default function HomePage() {
           {/* ── SOS + Navigate FAB — bottom right ───────────────────────────── */}
           <div
             className="absolute right-3 z-[1001] flex flex-col items-center gap-2.5"
-            style={{ bottom: isNavigating ? 12 : NAV_BAR_H + 12 }}
+            style={{ bottom: isNavigating
+              ? 12
+              : `calc(${NAV_BAR_H}px + env(safe-area-inset-bottom, 0px) + 12px)` }}
           >
             <SOSButton />
             {!isNavigating && !navSheetOpen && (
