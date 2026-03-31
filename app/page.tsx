@@ -241,7 +241,7 @@ export default function HomePage() {
               Hidden during active navigation and when nav sheet is open       */}
           {!navSheetOpen && !isNavigating && (
             <div
-              className="absolute left-3 z-[1000] flex flex-col items-start gap-1.5"
+              className="fixed left-3 z-[1003] flex flex-col items-start gap-1.5"
               style={{ bottom: `calc(${NAV_BAR_H}px + env(safe-area-inset-bottom, 0px) + 12px)` }}
             >
               <SafetyLegend />
@@ -257,9 +257,9 @@ export default function HomePage() {
 
           {/* ── SOS + Navigate FAB — bottom right ───────────────────────────── */}
           <div
-            className="absolute right-3 z-[1001] flex flex-col items-center gap-2.5"
+            className="fixed right-3 z-[1004] flex flex-col items-center gap-2.5"
             style={{ bottom: isNavigating
-              ? 12
+              ? `calc(env(safe-area-inset-bottom, 0px) + 12px)`
               : `calc(${NAV_BAR_H}px + env(safe-area-inset-bottom, 0px) + 12px)` }}
           >
             <SOSButton />
