@@ -12,7 +12,7 @@ interface Props {
 }
 
 function makeCameraIcon(selected: boolean) {
-  const bg   = selected ? '#16a34a' : '#1e293b'
+  const bg   = selected ? '#0d9488' : '#1e293b'
   const ring = selected ? '#bbf7d0' : '#e2e8f0'
   const size = selected ? 34 : 28
   const svg  = `

@@ -51,7 +51,7 @@ interface Story {
 const CAT_CFG: Record<PostCategory, { label: string; color: string; bg: string; text: string; ring: string }> = {
   alert:   { label: '🚨 Alert',    color: '#DC2626', bg: 'bg-red-50',    text: 'text-red-600',    ring: 'ring-red-400'   },
   caution: { label: '⚠️ Caution',  color: '#D97706', bg: 'bg-amber-50',  text: 'text-amber-700',  ring: 'ring-amber-400' },
-  safe:    { label: '✅ Safe Spot', color: '#16A34A', bg: 'bg-green-50',  text: 'text-green-700',  ring: 'ring-green-400' },
+  safe:    { label: '✅ Safe Spot', color: '#0d9488', bg: 'bg-green-50',  text: 'text-green-700',  ring: 'ring-green-400' },
   tip:     { label: '💡 Tip',      color: '#2563EB', bg: 'bg-blue-50',   text: 'text-blue-600',   ring: 'ring-blue-400'  },
 }
 

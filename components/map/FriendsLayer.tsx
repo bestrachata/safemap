@@ -40,7 +40,7 @@ function makeAvatarIcon(
   const selfBadge = isSelf ? `
     <div style="
       position:absolute;top:-8px;left:50%;transform:translateX(-50%);
-      background:#16A34A;color:white;font-size:7px;font-weight:800;
+      background:#0d9488;color:white;font-size:7px;font-weight:800;
       padding:1px 5px;border-radius:99px;white-space:nowrap;
     ">YOU</div>` : ''
 
@@ -97,10 +97,10 @@ export default function FriendsLayer({ friends, selfUser, ghostMode, onFriendCli
             <div style={{ minWidth: 148, fontFamily: 'inherit' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                 <img src={selfUser.avatarUrl} width={32} height={32}
-                  style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', border: '2px solid #16A34A' }} />
+                  style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', border: '2px solid #0d9488' }} />
                 <div>
                   <div style={{ fontWeight: 700, fontSize: 12, color: '#1e293b' }}>You</div>
-                  <div style={{ fontSize: 10, color: '#16A34A', fontWeight: 600 }}>📍 Sharing location</div>
+                  <div style={{ fontSize: 10, color: '#0d9488', fontWeight: 600 }}>📍 Sharing location</div>
                 </div>
               </div>
               <div style={{ fontSize: 10, color: '#94a3b8' }}>Empire State Building area</div>

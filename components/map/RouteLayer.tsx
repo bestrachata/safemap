@@ -201,7 +201,7 @@ export default function RouteLayer({
         const last  = routes[0].geometry[routes[0].geometry.length - 1]
         return (
           <>
-            <Marker position={[first.lat, first.lng]} icon={createPinIcon('#16A34A', 'A')}>
+            <Marker position={[first.lat, first.lng]} icon={createPinIcon('#0d9488', 'A')}>
               <Popup><span style={{ fontSize: 12, fontWeight: 600 }}>Origin</span></Popup>
             </Marker>
             <Marker position={[last.lat, last.lng]} icon={createPinIcon('#DC2626', 'B')}>

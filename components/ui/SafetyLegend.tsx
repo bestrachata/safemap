@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 const SCALE = [
-  { label: 'Safe',     color: '#16A34A', range: '82–100' },
+  { label: 'Safe',     color: '#0d9488', range: '82–100' },
   { label: 'Good',     color: '#65A30D', range: '65–81'  },
   { label: 'Moderate', color: '#D97706', range: '50–64'  },
   { label: 'Caution',  color: '#EA580C', range: '35–49'  },

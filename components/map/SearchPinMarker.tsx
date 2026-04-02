@@ -20,11 +20,11 @@ function makeIcon() {
       <svg width="28" height="38" viewBox="0 0 28 38" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- pin body -->
         <path d="M14 0C6.268 0 0 6.268 0 14c0 9.333 14 24 14 24S28 23.333 28 14C28 6.268 21.732 0 14 0z"
-              fill="#16a34a"/>
+              fill="#0d9488"/>
         <!-- white outer circle -->
         <circle cx="14" cy="14" r="7" fill="white"/>
         <!-- green inner dot -->
-        <circle cx="14" cy="14" r="3.5" fill="#16a34a"/>
+        <circle cx="14" cy="14" r="3.5" fill="#0d9488"/>
       </svg>
     </div>`
 

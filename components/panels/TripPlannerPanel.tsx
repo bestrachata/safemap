@@ -21,7 +21,7 @@ interface SliderProps {
   color?: string
 }
 
-function Slider({ label, value, onChange, leftLabel, rightLabel, color = '#16A34A' }: SliderProps) {
+function Slider({ label, value, onChange, leftLabel, rightLabel, color = '#0d9488' }: SliderProps) {
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
@@ -251,7 +251,7 @@ export default function TripPlannerPanel({ onClose, onRoutesCalculated }: Props)
               <div>
                 <label className="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-3">Priorities</label>
                 <div className="space-y-4">
-                  <Slider label="Safety Weight" value={prefs.safetyWeight} onChange={v => setPrefs(p => ({ ...p, safetyWeight: v }))} leftLabel="Less important" rightLabel="Most important" color="#16A34A" />
+                  <Slider label="Safety Weight" value={prefs.safetyWeight} onChange={v => setPrefs(p => ({ ...p, safetyWeight: v }))} leftLabel="Less important" rightLabel="Most important" color="#0d9488" />
                   <Slider label="Speed Weight" value={prefs.speedWeight} onChange={v => setPrefs(p => ({ ...p, speedWeight: v }))} leftLabel="Safety first" rightLabel="Speed first" color="#3B82F6" />
                 </div>
               </div>

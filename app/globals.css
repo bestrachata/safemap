@@ -1,7 +1,23 @@
 @import "tailwindcss";
 
+/* ─── Brand colour: remap Tailwind's "green" palette to the AssureWay teal ── */
+@theme {
+  --color-green-50:  #f0fdfa;
+  --color-green-100: #ccfbf1;
+  --color-green-200: #99f6e4;
+  --color-green-300: #5eead4;
+  --color-green-400: #2dd4bf;
+  --color-green-500: #14b8a6;
+  --color-green-600: #0d9488;
+  --color-green-700: #0f766e;
+  --color-green-800: #115e59;
+  --color-green-900: #134e4a;
+  --color-green-950: #042f2e;
+}
+
 :root {
   --font-inter: 'Inter', sans-serif;
+  --brand: #0d9488;
 }
 
 /* ─── Mobile viewport — prevent rubber-band scroll on iOS ───────────────── */
@@ -100,8 +116,8 @@ body {
 
 .leaflet-control-zoom-in:hover,
 .leaflet-control-zoom-out:hover {
-  background: #f0fdf4 !important;
-  color: #16a34a !important;
+  background: #f0fdfa !important;
+  color: #0d9488 !important;
 }
 
 .leaflet-control-attribution {
@@ -180,7 +196,7 @@ input[type='range']::-moz-range-thumb {
   height: 18px;
   border-radius: 50%;
   background: white;
-  border: 2.5px solid #16a34a;
+  border: 2.5px solid #0d9488;
   cursor: pointer;
   pointer-events: auto;
   box-shadow: 0 1px 5px rgba(0,0,0,0.25);
@@ -193,7 +209,7 @@ input[type='range']::-moz-range-thumb {
   height: 18px;
   border-radius: 50%;
   background: white;
-  border: 2.5px solid #16a34a;
+  border: 2.5px solid #0d9488;
   cursor: pointer;
   pointer-events: auto;
   box-shadow: 0 1px 5px rgba(0,0,0,0.25);

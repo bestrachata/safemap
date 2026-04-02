@@ -15,7 +15,7 @@ interface Props {
  * A Leaflet DivIcon marker that renders a pulsing green arrow pointing in the
  * direction of travel. Recreated whenever position or bearing changes.
  */
-export default function NavigationMarker({ position, bearing, color = '#16a34a' }: Props) {
+export default function NavigationMarker({ position, bearing, color = '#0d9488' }: Props) {
   const map = useMap()
 
   useEffect(() => {

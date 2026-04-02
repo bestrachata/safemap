@@ -48,7 +48,7 @@ export function getLayerScore(cell: GridCell, layer: HeatmapLayer): number {
 
 // Convert score 0–100 to a hex color (red → amber → green)
 export function scoreToColor(score: number): string {
-  if (score >= 82) return '#16A34A'    // green-600 — safe
+  if (score >= 82) return '#0d9488'    // green-600 — safe
   if (score >= 65) return '#65A30D'    // lime-600 — good
   if (score >= 50) return '#D97706'    // amber-600 — moderate
   if (score >= 35) return '#EA580C'    // orange-600 — concerning

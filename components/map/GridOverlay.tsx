@@ -20,7 +20,7 @@ export default function GridOverlay({ cells, activeLayer, selectedCellId, onCell
         const isSelected = cell.id === selectedCellId
 
         const pathOptions = {
-          color: isSelected ? '#16A34A' : color,
+          color: isSelected ? '#0d9488' : color,
           weight: isSelected ? 2.5 : 1,
           fillColor: color,
           fillOpacity: isSelected ? 0.55 : 0.40,

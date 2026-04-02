@@ -220,7 +220,7 @@ export default function FriendsPanel({
                     src={SELF_USER.avatarUrl}
                     alt="You"
                     className="w-12 h-12 rounded-full object-cover shadow"
-                    style={{ border: '2.5px solid #16A34A' }}
+                    style={{ border: '2.5px solid #0d9488' }}
                   />
                   {!ghostMode && (
                     <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full border-2 border-white bg-green-500" />

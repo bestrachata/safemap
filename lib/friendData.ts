@@ -66,7 +66,7 @@ export interface SelfUser {
 }
 
 export const SELF_USER: SelfUser = {
-  name: 'You', initials: 'ME', avatarColor: '#16A34A',
+  name: 'You', initials: 'ME', avatarColor: '#0d9488',
   avatarUrl: 'https://i.pravatar.cc/80?img=70',
   lat: 40.7484, lng: -73.9857,
 }
