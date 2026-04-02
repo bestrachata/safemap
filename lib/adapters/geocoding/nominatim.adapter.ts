@@ -17,7 +17,7 @@ export const NominatimAdapter: IGeocodingAdapter = {
       bounded: '1',
     })
     const res = await fetch(`${NOMINATIM_BASE}/search?${params}`, {
-      headers: { 'User-Agent': 'SafeMap/1.0 (safety-navigation-app)' },
+      headers: { 'User-Agent': 'AssureWay/1.0 (safety-navigation-app)' },
     })
     if (!res.ok) throw new Error('Geocoding request failed')
     const data = await res.json()
@@ -34,7 +34,7 @@ export const NominatimAdapter: IGeocodingAdapter = {
       format: 'json',
     })
     const res = await fetch(`${NOMINATIM_BASE}/reverse?${params}`, {
-      headers: { 'User-Agent': 'SafeMap/1.0 (safety-navigation-app)' },
+      headers: { 'User-Agent': 'AssureWay/1.0 (safety-navigation-app)' },
     })
     if (!res.ok) throw new Error('Reverse geocoding failed')
     const data = await res.json()

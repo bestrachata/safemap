@@ -1,6 +1,6 @@
 {
-  "name": "SafeMap",
-  "short_name": "SafeMap",
+  "name": "AssureWay",
+  "short_name": "AssureWay",
   "description": "Safety-first navigation for cities",
   "start_url": "/",
   "display": "standalone",

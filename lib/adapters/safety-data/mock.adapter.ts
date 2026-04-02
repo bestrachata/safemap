@@ -21,7 +21,7 @@ async function loadCells(): Promise<GridCell[]> {
     const features: GeoJSONFeature[] = geojson.features ?? []
     cells = generateFromGeoJSON(features)
   } catch (err) {
-    console.warn('SafeMap: falling back to uniform grid —', err)
+    console.warn('AssureWay: falling back to uniform grid —', err)
     cells = generateFallbackCells()
   }
 
@@ -67,12 +67,12 @@ async function loadCells(): Promise<GridCell[]> {
     })
 
     console.log(
-      `[SafeMap] Scores updated — ${shootings.length} shootings, ` +
+      `[AssureWay] Scores updated — ${shootings.length} shootings, ` +
       `${hateCrimes.length} hate crimes, ${syringes.length} syringe pickups, ` +
       `${cfsRecords.length} calls for service`
     )
   } catch (err) {
-    console.warn('[SafeMap] Could not apply crime data to scores —', err)
+    console.warn('[AssureWay] Could not apply crime data to scores —', err)
   }
 
   _cachedCells = cells

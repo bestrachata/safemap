@@ -1,5 +1,5 @@
 /**
- * friendData.ts — Mock friend data for the SafeMap social layer.
+ * friendData.ts — Mock friend data for the AssureWay social layer.
  */
 
 export type FriendStatus = 'online' | 'away' | 'ghost'

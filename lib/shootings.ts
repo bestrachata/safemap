@@ -38,10 +38,10 @@ export async function getShootings(): Promise<ShootingPoint[]> {
       }))
       .filter(p => !isNaN(p.lat) && !isNaN(p.lng))
 
-    console.log(`[SafeMap] Loaded ${_cache.length} shooting incidents from NYC Open Data`)
+    console.log(`[AssureWay] Loaded ${_cache.length} shooting incidents from NYC Open Data`)
     return _cache
   } catch (err) {
-    console.warn('[SafeMap] Could not load shooting data — using mock crime scores', err)
+    console.warn('[AssureWay] Could not load shooting data — using mock crime scores', err)
     _cache = []
     return []
   }

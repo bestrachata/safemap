@@ -123,16 +123,16 @@ export const OsrmAdapter: IRoutingAdapter = {
         if (routes[0]) routes[0].label = 'safest'
         if (routes[1]) routes[1].label = 'fastest'
 
-        console.info(`[SafeMap] Routing via ${base.includes('openstreetmap.de') ? 'OSM.de walking' : 'OSRM walking'}`)
+        console.info(`[AssureWay] Routing via ${base.includes('openstreetmap.de') ? 'OSM.de walking' : 'OSRM walking'}`)
         return routes
       } catch (err) {
-        console.warn(`[SafeMap] Routing endpoint ${base} failed —`, (err as Error).message)
+        console.warn(`[AssureWay] Routing endpoint ${base} failed —`, (err as Error).message)
         // Try next endpoint
       }
     }
 
     // All real endpoints failed — fall back to mock
-    console.warn('[SafeMap] All routing endpoints unreachable, using mock L-shape fallback')
+    console.warn('[AssureWay] All routing endpoints unreachable, using mock L-shape fallback')
     return MockRoutingAdapter.getRoutes(origin, destination)
   },
 }

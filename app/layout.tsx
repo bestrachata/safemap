@@ -14,20 +14,20 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'SafeMap — Navigate with Confidence',
+  title: 'AssureWay — Navigate with Confidence',
   description: 'A safety-first navigation platform. Explore safety heatmaps, find the safest route, and travel with confidence.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'SafeMap',
+    title: 'AssureWay',
   },
   icons: {
     icon: '/icon-512.png',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
-    title: 'SafeMap',
+    title: 'AssureWay',
     description: 'Navigate with confidence using real-time safety heatmaps.',
     type: 'website',
   },

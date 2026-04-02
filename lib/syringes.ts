@@ -68,10 +68,10 @@ export async function getSyringeData(): Promise<SyringeRecord[]> {
         total:    parseFloat(r.total_syringes ?? '0') || 0,
       }))
 
-    console.log(`[SafeMap] Loaded ${_cache.length} syringe collection records from NYC Open Data`)
+    console.log(`[AssureWay] Loaded ${_cache.length} syringe collection records from NYC Open Data`)
     return _cache
   } catch (err) {
-    console.warn('[SafeMap] Could not load syringe data —', err)
+    console.warn('[AssureWay] Could not load syringe data —', err)
     _cache = []
     return []
   }

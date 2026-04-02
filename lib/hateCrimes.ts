@@ -74,10 +74,10 @@ export async function getHateCrimes(): Promise<HateCrimeRecord[]> {
         category: r.offense_category ?? '',
       }))
 
-    console.log(`[SafeMap] Loaded ${_cache.length} hate crime records from NYC Open Data`)
+    console.log(`[AssureWay] Loaded ${_cache.length} hate crime records from NYC Open Data`)
     return _cache
   } catch (err) {
-    console.warn('[SafeMap] Could not load hate crime data —', err)
+    console.warn('[AssureWay] Could not load hate crime data —', err)
     _cache = []
     return []
   }

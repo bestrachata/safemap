@@ -9,7 +9,7 @@ export default function SettingsScreen() {
     <div className="flex flex-col h-full bg-white">
       {/* Header */}
       <div className="px-5 pt-5 pb-4 border-b border-slate-100 flex-shrink-0">
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">SafeMap</p>
+        <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">AssureWay</p>
         <h2 className="text-lg font-bold text-slate-800 mt-0.5">Settings</h2>
       </div>
 

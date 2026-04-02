@@ -496,7 +496,7 @@ export default function CommunityScreen() {
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="bg-white flex items-center justify-between px-5 pt-5 pb-4 border-b border-slate-100 flex-shrink-0">
         <div>
-          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">SafeMap</p>
+          <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest">AssureWay</p>
           <h2 className="text-xl font-black text-slate-800 leading-tight">Community</h2>
         </div>
         <div className="flex items-center gap-2">

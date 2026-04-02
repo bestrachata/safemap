@@ -3,7 +3,7 @@
 /**
  * TopBar — single-row compact header.
  *
- * [🛡 SafeMap] [🔍 Search New York…  ×] [👥] [🔔●] [Avatar]
+ * [🛡 AssureWay] [🔍 Search New York…  ×] [👥] [🔔●] [Avatar]
  *
  * The search bar lives in the same row as all action icons.
  * It's always visible — no extra tap required to open it.
@@ -87,7 +87,7 @@ export default function TopBar({
         <div className="bg-white rounded-2xl shadow-lg">
           <div className="flex items-center h-12 px-3 gap-2">
 
-            {/* Brand — compact: shield icon + "SafeMap" text only */}
+            {/* Brand — compact: shield icon + "AssureWay" text only */}
             <div className="flex items-center gap-1.5 flex-shrink-0">
               <div className="w-7 h-7 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
                 <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,7 +96,7 @@ export default function TopBar({
                 </svg>
               </div>
               <span className="font-black text-slate-800 text-[13px] tracking-tight whitespace-nowrap">
-                Safe<span className="text-green-600">Map</span>
+                Assure<span className="text-green-600">Way</span>
               </span>
             </div>
 

@@ -86,10 +86,10 @@ export async function getCallsForService(): Promise<CfsRecord[]> {
       }))
       .filter(r => r.severity > 0 && !isNaN(r.lat) && !isNaN(r.lng))
 
-    console.log(`[SafeMap] Loaded ${_cache.length} calls-for-service records from NYC Open Data`)
+    console.log(`[AssureWay] Loaded ${_cache.length} calls-for-service records from NYC Open Data`)
     return _cache
   } catch (err) {
-    console.warn('[SafeMap] Could not load calls-for-service data —', err)
+    console.warn('[AssureWay] Could not load calls-for-service data —', err)
     _cache = []
     return []
   }
