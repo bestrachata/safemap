@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Marker, Tooltip } from 'react-leaflet'
+import { useEffect, useState, useCallback } from 'react'
+import { Marker, Tooltip, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import { Camera, fetchLiveCameras } from '@/lib/cctv'
 
@@ -26,27 +26,38 @@ function makeCameraIcon(selected: boolean) {
   return L.divIcon({ html: svg, className: '', iconSize: [size, size], iconAnchor: [size / 2, size / 2] })
 }
 
-export default function CctvLayer({ visible, onCameraSelect, selectedCameraId }: Props) {
-  const [cameras, setCameras] = useState<Camera[]>([])
-  const [loading, setLoading] = useState(false)
+/** Inner component — has access to the Leaflet map context */
+function CctvMarkers({
+  allCameras, onCameraSelect, selectedCameraId,
+}: {
+  allCameras: Camera[]
+  onCameraSelect: (cam: Camera) => void
+  selectedCameraId: string | null
+}) {
+  const [bounds, setBounds] = useState<L.LatLngBounds | null>(null)
 
+  const updateBounds = useCallback((map: L.Map) => {
+    setBounds(map.getBounds())
+  }, [])
+
+  const map = useMapEvents({
+    moveend: () => updateBounds(map),
+    zoomend: () => updateBounds(map),
+  })
+
+  // Initialise bounds on first render
   useEffect(() => {
-    if (!visible) return
-    if (cameras.length > 0) return   // already loaded
+    updateBounds(map)
+  }, [map, updateBounds])
 
-    setLoading(true)
-    fetchLiveCameras().then(live => {
-      setCameras(live ?? [])
-      setLoading(false)
-    })
-  }, [visible, cameras.length])
-
-  if (!visible) return null
-  if (loading && cameras.length === 0) return null
+  // Only render cameras inside the current viewport
+  const visible = bounds
+    ? allCameras.filter(c => bounds.contains([c.lat, c.lng]))
+    : []
 
   return (
     <>
-      {cameras.map(cam => (
+      {visible.map(cam => (
         <Marker
           key={cam.id}
           position={[cam.lat, cam.lng]}
@@ -66,5 +77,26 @@ export default function CctvLayer({ visible, onCameraSelect, selectedCameraId }:
         </Marker>
       ))}
     </>
+  )
+}
+
+export default function CctvLayer({ visible, onCameraSelect, selectedCameraId }: Props) {
+  const [allCameras, setAllCameras] = useState<Camera[]>([])
+
+  // Load all cameras once on mount (or when first toggled on)
+  useEffect(() => {
+    if (!visible) return
+    if (allCameras.length > 0) return
+    fetchLiveCameras().then(live => setAllCameras(live ?? []))
+  }, [visible, allCameras.length])
+
+  if (!visible || allCameras.length === 0) return null
+
+  return (
+    <CctvMarkers
+      allCameras={allCameras}
+      onCameraSelect={onCameraSelect}
+      selectedCameraId={selectedCameraId}
+    />
   )
 }

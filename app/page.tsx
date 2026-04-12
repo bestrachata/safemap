@@ -69,7 +69,7 @@ export default function HomePage() {
   const [selectedFriend, setSelectedFriend]           = useState<Friend | null>(null)
   const [notificationPanelOpen, setNotificationPanelOpen] = useState(false)
   const [ghostMode, setGhostMode]                     = useState(false)
-  const [cctvVisible, setCctvVisible]                 = useState(false)
+  const [cctvVisible, setCctvVisible]                 = useState(true)
   const [selectedCamera, setSelectedCamera]           = useState<Camera | null>(null)
 
   useEffect(() => {
