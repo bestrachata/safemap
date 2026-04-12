@@ -1,12 +1,9 @@
 /**
  * cctv.ts — 511NY traffic camera integration for AssureWay.
  *
- * Fetches real DOT cameras across NYC. Each camera that has a VideoUrl
- * provides a live HLS (.m3u8) stream playable via hls.js.
- *
- * API key can be set via NEXT_PUBLIC_511NY_API_KEY env var.
- * The key is also embedded here as a fallback so the feature works
- * out-of-the-box during development.
+ * Camera data is fetched via the internal /api/cameras route (which proxies
+ * 511NY server-side to avoid CORS restrictions). Each camera has a real live
+ * HLS (.m3u8) stream playable in the browser via hls.js.
  */
 
 export interface Camera {
@@ -16,84 +13,36 @@ export interface Camera {
   borough:      string
   lat:          number
   lng:          number
-  /** Live HLS .m3u8 stream URL — present when 511NY provides one */
+  /** Live HLS .m3u8 stream URL */
   videoUrl?:    string
-  /** 511NY camera page URL (used as fallback label link) */
+  /** 511NY camera page URL */
   pageUrl?:     string
-}
-
-// ── 511NY raw response shape (actual field names from the API) ───────────────
-interface Raw511Camera {
-  ID:                string
-  Name:              string
-  DirectionOfTravel: string
-  RoadwayName:       string
-  Latitude:          number
-  Longitude:         number
-  Url:               string        // 511ny.org map page
-  VideoUrl:          string | null // HLS .m3u8 live stream
-  Disabled:          boolean
-  Blocked:           boolean
 }
 
 // ── Module-level cache ───────────────────────────────────────────────────────
 let _liveCache: Camera[] | null = null
 let _liveFetchedAt = 0
-const CACHE_TTL_MS = 5 * 60 * 1000   // refresh list every 5 min
-
-// NYC bounding box (all 5 boroughs + surrounding highways)
-const NYC_BOUNDS = {
-  latMin: 40.490, latMax: 40.920,
-  lngMin: -74.260, lngMax: -73.700,
-}
+const CACHE_TTL_MS = 5 * 60 * 1000
 
 /**
- * Fetch real cameras from 511NY.
- * Returns null if the request fails; returns cached data within TTL.
+ * Fetch cameras from the internal proxy route (/api/cameras).
+ * Returns null on error; uses a 5-minute in-memory cache.
  */
 export async function fetchLiveCameras(): Promise<Camera[] | null> {
-  const key =
-    process.env.NEXT_PUBLIC_511NY_API_KEY ||
-    '7ff124715b50478f8a2469266b5b1420'
-
   const now = Date.now()
   if (_liveCache && now - _liveFetchedAt < CACHE_TTL_MS) return _liveCache
 
   try {
-    const res = await fetch(
-      `https://511ny.org/api/getcameras?key=${key}&format=json`,
-      { cache: 'no-store' }
-    )
-    if (!res.ok) throw new Error(`511NY responded ${res.status}`)
+    const res = await fetch('/api/cameras')
+    if (!res.ok) throw new Error(`/api/cameras responded ${res.status}`)
 
-    const raw: Raw511Camera[] = await res.json()
-
-    const cameras: Camera[] = raw
-      .filter(c =>
-        !c.Disabled &&
-        !c.Blocked &&
-        c.VideoUrl &&
-        c.Latitude  >= NYC_BOUNDS.latMin && c.Latitude  <= NYC_BOUNDS.latMax &&
-        c.Longitude >= NYC_BOUNDS.lngMin && c.Longitude <= NYC_BOUNDS.lngMax
-      )
-      .map(c => ({
-        id:           c.ID,
-        name:         c.Name || c.RoadwayName || 'Traffic Camera',
-        intersection: [c.DirectionOfTravel, c.RoadwayName]
-                        .filter(Boolean).join(' — '),
-        borough:      'NYC',
-        lat:          c.Latitude,
-        lng:          c.Longitude,
-        videoUrl:     c.VideoUrl!,
-        pageUrl:      c.Url,
-      }))
-
-    console.log(`[AssureWay] Loaded ${cameras.length} live cameras from 511NY`)
+    const cameras: Camera[] = await res.json()
+    console.log(`[AssureWay] Loaded ${cameras.length} live cameras`)
     _liveCache     = cameras
     _liveFetchedAt = now
     return cameras
   } catch (err) {
-    console.warn('[AssureWay] 511NY camera fetch failed:', err)
+    console.warn('[AssureWay] Camera fetch failed:', err)
     return null
   }
 }
