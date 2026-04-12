@@ -16,7 +16,9 @@ import SyringeLayer from './SyringeLayer'
 import SearchPinMarker from './SearchPinMarker'
 import RecentEventsLayer from './RecentEventsLayer'
 import FriendsLayer from './FriendsLayer'
+import CctvLayer from './CctvLayer'
 import { Friend, SELF_USER } from '@/lib/friendData'
+import { Camera } from '@/lib/cctv'
 
 import L from 'leaflet'
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl
@@ -44,6 +46,9 @@ interface Props {
   friends?: Friend[]
   ghostMode?: boolean
   onFriendClick?: (friend: Friend) => void
+  cctvVisible?: boolean
+  selectedCameraId?: string | null
+  onCameraSelect?: (cam: Camera) => void
 }
 
 export default function SafetyMap({
@@ -57,6 +62,9 @@ export default function SafetyMap({
   friends = [],
   ghostMode = false,
   onFriendClick,
+  cctvVisible = false,
+  selectedCameraId = null,
+  onCameraSelect,
 }: Props) {
   const mapRef = useRef<L.Map | null>(null)
   const center = MapAdapter.getDefaultCenter()
@@ -129,6 +137,13 @@ export default function SafetyMap({
 
       {/* Search pin */}
       <SearchPinMarker result={searchPin} />
+
+      {/* CCTV camera pins */}
+      <CctvLayer
+        visible={cctvVisible}
+        selectedCameraId={selectedCameraId}
+        onCameraSelect={cam => onCameraSelect?.(cam)}
+      />
 
       {/* Navigation arrow */}
       {navPosition && <NavigationMarker position={navPosition} bearing={navBearing} />}

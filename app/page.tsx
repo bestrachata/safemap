@@ -14,8 +14,10 @@ import FilterDropdown from '@/components/ui/FilterDropdown'
 import MapStylePicker from '@/components/ui/MapStylePicker'
 import FriendsPanel from '@/components/ui/FriendsPanel'
 import FriendQuickPanel from '@/components/ui/FriendQuickPanel'
+import CctvPopup from '@/components/ui/CctvPopup'
 import NotificationPanel from '@/components/ui/NotificationPanel'
 import { MOCK_FRIENDS, Friend } from '@/lib/friendData'
+import { Camera } from '@/lib/cctv'
 import BottomNav, { Tab } from '@/components/ui/BottomNav'
 import AreaDetailPanel from '@/components/panels/AreaDetailPanel'
 import NavigationPanel from '@/components/panels/NavigationPanel'
@@ -67,6 +69,8 @@ export default function HomePage() {
   const [selectedFriend, setSelectedFriend]           = useState<Friend | null>(null)
   const [notificationPanelOpen, setNotificationPanelOpen] = useState(false)
   const [ghostMode, setGhostMode]                     = useState(false)
+  const [cctvVisible, setCctvVisible]                 = useState(false)
+  const [selectedCamera, setSelectedCamera]           = useState<Camera | null>(null)
 
   useEffect(() => {
     SafetyDataAdapter.getGridCells().then(setCells)
@@ -166,6 +170,9 @@ export default function HomePage() {
           friends={MOCK_FRIENDS}
           ghostMode={ghostMode}
           onFriendClick={f => setSelectedFriend(f)}
+          cctvVisible={cctvVisible}
+          selectedCameraId={selectedCamera?.id ?? null}
+          onCameraSelect={cam => setSelectedCamera(cam)}
         />
       </div>
 
@@ -226,6 +233,21 @@ export default function HomePage() {
                 onChange={setMapStyle}
                 dropUp={false}
               />
+              {/* CCTV toggle */}
+              <button
+                onClick={() => { setCctvVisible(v => !v); if (cctvVisible) setSelectedCamera(null) }}
+                title={cctvVisible ? 'Hide cameras' : 'Show live cameras'}
+                className={`flex items-center gap-1 px-2.5 h-8 rounded-xl text-xs font-semibold border transition-colors flex-shrink-0
+                  ${cctvVisible
+                    ? 'bg-teal-600 text-white border-teal-600 shadow-sm'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'}`}
+              >
+                <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M3 8a1 1 0 011-1h9a1 1 0 011 1v8a1 1 0 01-1 1H4a1 1 0 01-1-1V8z" />
+                </svg>
+                <span className="hidden sm:inline">{cctvVisible ? 'Hide' : 'Cams'}</span>
+              </button>
             </div>
           </div>
 
@@ -322,6 +344,14 @@ export default function HomePage() {
             <FriendQuickPanel
               friend={selectedFriend}
               onClose={() => setSelectedFriend(null)}
+            />
+          )}
+
+          {/* CCTV live video popup */}
+          {selectedCamera && (
+            <CctvPopup
+              camera={selectedCamera}
+              onClose={() => setSelectedCamera(null)}
             />
           )}
         </>
